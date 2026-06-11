@@ -525,6 +525,16 @@ def main():
 
             semua = belum + retry
 
+            # Deduplikasi berdasarkan nama (cegah duplicate key jika submit form > 1x)
+            seen_names: set = set()
+            semua_unik = []
+            for r in semua:
+                n = r[1] if len(r) > 1 else ""
+                if n and n not in seen_names:
+                    seen_names.add(n)
+                    semua_unik.append(r)
+            semua = semua_unik
+
             if not semua:
                 st.success("✅ Semua kandidat sudah berhasil dianalisis!")
             else:
