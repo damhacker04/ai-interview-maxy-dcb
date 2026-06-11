@@ -42,11 +42,15 @@ def get_google_creds():
     # Coba dari Streamlit Secrets dulu
     try:
         sa_info = st.secrets["gcp_service_account"]
+        private_key = sa_info["private_key"]
+        # Handle literal \n (TOML single-quoted string tidak konversi \n otomatis)
+        if "\\n" in private_key:
+            private_key = private_key.replace("\\n", "\n")
         creds_dict = {
             "type":                        sa_info["type"],
             "project_id":                  sa_info["project_id"],
             "private_key_id":              sa_info["private_key_id"],
-            "private_key":                 sa_info["private_key"].replace("\\n", "\n"),
+            "private_key":                 private_key,
             "client_email":                sa_info["client_email"],
             "client_id":                   sa_info["client_id"],
             "auth_uri":                    sa_info["auth_uri"],
@@ -56,7 +60,27 @@ def get_google_creds():
         }
         return Credentials.from_service_account_info(creds_dict, scopes=scopes)
     except (KeyError, FileNotFoundError):
+        # Secrets belum dikonfigurasi → coba file lokal
         pass
+    except Exception as e:
+        # Secrets ada tapi private_key salah format
+        st.error(
+            "❌ **Streamlit Secrets ditemukan, tapi `private_key` tidak valid.**\n\n"
+            "**Solusi:** Buka **Manage app → Settings → Secrets**, hapus baris `private_key` "
+            "yang ada, lalu ganti dengan format multi-baris:\n\n"
+            "```toml\n"
+            'private_key = """\n'
+            "-----BEGIN PRIVATE KEY-----\n"
+            "(salin setiap baris key di sini)\n"
+            "-----END PRIVATE KEY-----\n"
+            '"""\n'
+            "```\n\n"
+            "Jalankan perintah ini di PowerShell (di folder proyek) untuk melihat "
+            "isi key yang benar:\n"
+            "```\npython -c \"import json; d=json.load(open('credentials.json')); "
+            "print(d['private_key'])\"\n```"
+        )
+        st.stop()
 
     # Fallback ke file lokal
     if not os.path.exists(CREDENTIALS_FILE):
