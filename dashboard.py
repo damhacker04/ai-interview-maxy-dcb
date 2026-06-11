@@ -659,4 +659,10 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception:
+        st.warning("⚠️ Terjadi gangguan teknis. Silakan refresh halaman.")
+        if st.button("🔄 Refresh Halaman"):
+            st.cache_data.clear()
+            st.rerun()
