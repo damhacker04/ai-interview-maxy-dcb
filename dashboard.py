@@ -355,11 +355,11 @@ def load_data():
 
 def style_baris(row):
     warna = {
-        "Pass":   "background-color: #f0fff4",
-        "Review": "background-color: #fffdf0",
-        "Reject": "background-color: #fff5f5",
-        "Error":  "background-color: #f5f5f5",
-    }.get(row.get("Rekomendasi", ""), "")
+        "Pass":   "background-color: #f0fff4; color: #1a1a1a",
+        "Review": "background-color: #fffdf0; color: #1a1a1a",
+        "Reject": "background-color: #fff5f5; color: #1a1a1a",
+        "Error":  "background-color: #f5f5f5; color: #1a1a1a",
+    }.get(row.get("Rekomendasi", ""), "color: #1a1a1a")
     return [warna] * len(row)
 
 
