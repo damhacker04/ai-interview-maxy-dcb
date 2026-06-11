@@ -19,13 +19,19 @@ CREDENTIALS_FILE = os.getenv("GOOGLE_CREDENTIALS_FILE", "credentials.json")
 
 def get_spreadsheet_id():
     """Baca Spreadsheet ID dari Streamlit Secrets (cloud) atau .env (lokal)."""
+    # Coba dari Streamlit Secrets dulu
     try:
-        val = st.secrets.get("SPREADSHEET_ID", None)
+        val = st.secrets["SPREADSHEET_ID"]
         if val:
             return val
-    except Exception:
+    except (KeyError, FileNotFoundError):
         pass
-    return os.getenv("SPREADSHEET_ID")
+    # Fallback ke .env (lokal)
+    val = os.getenv("SPREADSHEET_ID")
+    if not val:
+        st.error("❌ SPREADSHEET_ID belum dikonfigurasi. Tambahkan ke Streamlit Secrets atau file .env.")
+        st.stop()
+    return val
 
 def get_google_creds():
     """Baca Google credentials dari Streamlit Secrets (cloud) atau file lokal."""
@@ -33,14 +39,33 @@ def get_google_creds():
         "https://www.googleapis.com/auth/spreadsheets",
         "https://www.googleapis.com/auth/drive",
     ]
+    # Coba dari Streamlit Secrets dulu
     try:
-        if "gcp_service_account" in st.secrets:
-            return Credentials.from_service_account_info(
-                dict(st.secrets["gcp_service_account"]),
-                scopes=scopes
-            )
-    except Exception:
+        sa_info = st.secrets["gcp_service_account"]
+        creds_dict = {
+            "type":                        sa_info["type"],
+            "project_id":                  sa_info["project_id"],
+            "private_key_id":              sa_info["private_key_id"],
+            "private_key":                 sa_info["private_key"].replace("\\n", "\n"),
+            "client_email":                sa_info["client_email"],
+            "client_id":                   sa_info["client_id"],
+            "auth_uri":                    sa_info["auth_uri"],
+            "token_uri":                   sa_info["token_uri"],
+            "auth_provider_x509_cert_url": sa_info["auth_provider_x509_cert_url"],
+            "client_x509_cert_url":        sa_info["client_x509_cert_url"],
+        }
+        return Credentials.from_service_account_info(creds_dict, scopes=scopes)
+    except (KeyError, FileNotFoundError):
         pass
+
+    # Fallback ke file lokal
+    if not os.path.exists(CREDENTIALS_FILE):
+        st.error(
+            "❌ Google credentials tidak ditemukan.\n\n"
+            "Jika kamu di Streamlit Cloud: tambahkan **[gcp_service_account]** di bagian Secrets.\n\n"
+            "Jika kamu di lokal: pastikan file `credentials.json` ada di folder proyek."
+        )
+        st.stop()
     return Credentials.from_service_account_file(CREDENTIALS_FILE, scopes=scopes)
 TAB_FORM         = "Form Responses 1"
 TAB_HASIL        = "Hasil Analisis"
