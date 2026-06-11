@@ -215,10 +215,23 @@ def analisis_video_gemini(gemini_client, video_path):
         sudah += 10
     if video_file.state.name != "ACTIVE":
         raise Exception("Video tidak aktif setelah 5 menit")
-    response = gemini_client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=[video_file, PROMPT_ANALISIS],
-    )
+
+    # Auto-retry sampai 3x jika Gemini server sedang overload (503)
+    for percobaan in range(1, 4):
+        try:
+            response = gemini_client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=[video_file, PROMPT_ANALISIS],
+            )
+            break
+        except Exception as e:
+            if percobaan == 3:
+                raise
+            if "503" in str(e) or "UNAVAILABLE" in str(e) or "429" in str(e):
+                time.sleep(30 * percobaan)  # tunggu 30s, 60s sebelum retry
+            else:
+                raise
+
     try:
         gemini_client.files.delete(name=video_file.name)
     except Exception:
