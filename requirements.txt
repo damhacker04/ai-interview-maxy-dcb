@@ -1,11 +1,7 @@
-python-dotenv
+streamlit
 gspread
+google-auth
 google-auth-oauthlib
-google-api-python-client
-google-generativeai
-numpy
-opencv-python
-librosa
-SpeechRecognition
-nltk
-tensorflow
+pandas
+openpyxl
+python-dotenv

@@ -15,8 +15,33 @@ from google.oauth2.service_account import Credentials
 
 load_dotenv()
 
-CREDENTIALS_FILE = os.getenv("GOOGLE_CREDENTIALS_FILE")
-SPREADSHEET_ID   = os.getenv("SPREADSHEET_ID")
+CREDENTIALS_FILE = os.getenv("GOOGLE_CREDENTIALS_FILE", "credentials.json")
+
+def get_spreadsheet_id():
+    """Baca Spreadsheet ID dari Streamlit Secrets (cloud) atau .env (lokal)."""
+    try:
+        val = st.secrets.get("SPREADSHEET_ID", None)
+        if val:
+            return val
+    except Exception:
+        pass
+    return os.getenv("SPREADSHEET_ID")
+
+def get_google_creds():
+    """Baca Google credentials dari Streamlit Secrets (cloud) atau file lokal."""
+    scopes = [
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive",
+    ]
+    try:
+        if "gcp_service_account" in st.secrets:
+            return Credentials.from_service_account_info(
+                dict(st.secrets["gcp_service_account"]),
+                scopes=scopes
+            )
+    except Exception:
+        pass
+    return Credentials.from_service_account_file(CREDENTIALS_FILE, scopes=scopes)
 TAB_FORM         = "Form Responses 1"
 TAB_HASIL        = "Hasil Analisis"
 
@@ -86,13 +111,9 @@ st.markdown("""
 # ─────────────────────────────────────────
 @st.cache_data(ttl=120)
 def load_data():
-    scopes = [
-        "https://www.googleapis.com/auth/spreadsheets",
-        "https://www.googleapis.com/auth/drive",
-    ]
-    creds  = Credentials.from_service_account_file(CREDENTIALS_FILE, scopes=scopes)
+    creds  = get_google_creds()
     client = gspread.authorize(creds)
-    sheet  = client.open_by_key(SPREADSHEET_ID)
+    sheet  = client.open_by_key(get_spreadsheet_id())
 
     # Hitung total pelamar dari tab form
     form_data    = sheet.worksheet(TAB_FORM).get_all_values()
