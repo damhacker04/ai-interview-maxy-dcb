@@ -467,8 +467,11 @@ def main():
                     st.markdown(f"**Rata-rata Skor:** {row.get('Rata-rata', '–')}")
                     st.markdown(f"**Dianalisis:** {row.get('Waktu Diproses', '–')}")
                     st.markdown("**Ringkasan AI:**")
-                    ringkasan = row.get("Ringkasan", "–")
-                    st.error(ringkasan) if "Error" in str(ringkasan) else st.info(ringkasan)
+                    ringkasan = str(row.get("Ringkasan", "–"))
+                    if "Error" in ringkasan:
+                        st.error(ringkasan)
+                    else:
+                        st.info(ringkasan)
                 with kanan:
                     st.markdown("**Skor per Kriteria:**")
                     def warna_skor(val):
