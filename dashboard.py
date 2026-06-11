@@ -282,13 +282,13 @@ def jalankan_analisis_satu(nama, timestamp, link_video, hasil_ws):
         ])
         return hasil['rekomendasi'], rata
 
-    except Exception:
+    except Exception as e:
         waktu = datetime.now().strftime("%Y-%m-%d %H:%M")
         try:
             hasil_ws.append_row([
                 timestamp, nama, link_video,
                 "", "", "", "", "", "", "", "",
-                f"Error: analisis gagal", "Error", "Error", waktu,
+                f"Error: {str(e)[:300]}", "Error", "Error", waktu,
             ])
         except Exception:
             pass
@@ -435,14 +435,15 @@ def main():
             with fc1:
                 filter_rek = st.selectbox(
                     "Filter rekomendasi:",
-                    ["Semua", "Pass", "Perlu Ditinjau (Review)", "Tidak Lolos (Reject)", "Error"],
+                    ["Semua", "Pass", "Perlu Ditinjau (Review)", "Tidak Lolos (Reject)"],
                 )
             with fc2:
                 cari = st.text_input("🔍 Cari nama:", placeholder="Ketik nama pelamar...")
 
-            df_gabung = pd.concat([df_selesai, df_error], ignore_index=True)
+            # Hanya tampilkan yang berhasil (Error ditangani di tab Analisis Kandidat Baru)
+            df_gabung = df_selesai.copy()
             peta = {"Pass": "Pass", "Perlu Ditinjau (Review)": "Review",
-                    "Tidak Lolos (Reject)": "Reject", "Error": "Error"}
+                    "Tidak Lolos (Reject)": "Reject"}
             if filter_rek != "Semua":
                 df_gabung = df_gabung[df_gabung["Rekomendasi"] == peta[filter_rek]]
             if cari:
@@ -528,6 +529,12 @@ def main():
         nama_sudah = set(df["Nama Lengkap"].tolist()) if not df.empty else set()
         nama_error = set(df[df["Status"] == "Error"]["Nama Lengkap"].tolist()) if not df.empty else set()
 
+        # Ambil pesan error per kandidat untuk ditampilkan sebagai keterangan
+        pesan_error = {}
+        if not df.empty and len(nama_error) > 0:
+            for _, er in df[df["Status"] == "Error"].iterrows():
+                pesan_error[er["Nama Lengkap"]] = er.get("Ringkasan", "")
+
         if len(form_data) <= 1:
             st.info("Belum ada data kandidat di Google Form.")
         else:
@@ -596,7 +603,14 @@ def main():
                         elif is_analyzing:
                             st.markdown("⏳ Dianalisis...")
                         elif is_retry:
-                            st.markdown("⚠️ Error — retry")
+                            err_msg = pesan_error.get(nama, "")
+                            if "503" in err_msg or "UNAVAILABLE" in err_msg:
+                                st.markdown("⚠️ Gagal — server Gemini sibuk")
+                            elif "429" in err_msg:
+                                st.markdown("⚠️ Gagal — limit API tercapai")
+                            else:
+                                st.markdown("⚠️ Gagal dianalisis")
+                            st.caption("Klik Retry untuk coba lagi")
                         else:
                             st.markdown("🟡 Belum dianalisis")
                     with c2:
