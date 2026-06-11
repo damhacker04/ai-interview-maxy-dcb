@@ -317,9 +317,19 @@ st.markdown("""
     }
     .header-box h1 { margin: 0; font-size: 1.8rem; }
     .header-box p  { margin: 0.3rem 0 0; opacity: 0.85; font-size: 1rem; }
+
+    /* Metric cards — pakai CSS variable agar otomatis ikut dark/light mode */
     div[data-testid="stMetric"] {
-        background: white; padding: 1rem; border-radius: 10px;
-        box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+        background: var(--secondary-background-color);
+        padding: 1rem; border-radius: 10px;
+        box-shadow: 0 1px 6px rgba(0,0,0,0.15);
+    }
+    div[data-testid="stMetric"] label {
+        color: var(--text-color) !important;
+        opacity: 0.75;
+    }
+    div[data-testid="stMetric"] [data-testid="stMetricValue"] {
+        color: var(--text-color) !important;
     }
 </style>
 """, unsafe_allow_html=True)
