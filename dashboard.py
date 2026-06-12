@@ -508,7 +508,10 @@ def main():
                     skor_df = pd.DataFrame({
                         "Kriteria": ["Perkenalan Diri", "Motivasi", "Tantangan Karier",
                                      "Tujuan Karier", "Relevansi Program", "Komitmen", "Komunikasi"],
-                        "Skor": [row.get(k, "–") for k in KOLOM_SKOR],
+                        "Skor": [
+                            round(float(row[k]), 2) if k in row and row[k] not in ("–", "", None) else "–"
+                            for k in KOLOM_SKOR
+                        ],
                     })
                     st.dataframe(skor_df.style.map(warna_skor, subset=["Skor"]),
                                  hide_index=True, use_container_width=True, height=284)
