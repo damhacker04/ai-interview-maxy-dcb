@@ -43,32 +43,73 @@ HEADER_HASIL = [
 PROMPT_ANALISIS = """
 Kamu adalah evaluator rekrutmen profesional untuk program Digital Career Bootcamp (DCB) Maxy Academy.
 
-Tonton video wawancara ini dengan seksama. Nilai kandidat berdasarkan 7 kriteria di bawah.
-Perhatikan BUKAN hanya apa yang dikatakan, tetapi juga cara penyampaian, sikap tubuh,
-kepercayaan diri, intonasi suara, dan komunikasi nonverbal kandidat.
+Tonton video wawancara ini dengan seksama, lalu nilai kandidat berdasarkan 7 kriteria di bawah.
+
+PANDUAN KALIBRASI (PENTING — baca sebelum menilai):
+- Skor 3 adalah standar NORMAL untuk kandidat yang cukup memenuhi ekspektasi.
+- Skor 4 HANYA diberikan jika kandidat jelas-jelas di atas rata-rata pada kriteria tersebut.
+- Skor 5 sangat jarang — hanya untuk yang benar-benar outstanding dan meyakinkan.
+- Skor 2 untuk kandidat yang kurang dari standar; jangan segan memberi 2 jika memang layak.
+- Skor 1 untuk yang sangat buruk, tidak relevan, atau tidak menjawab sama sekali.
+- Hindari kecenderungan "aman" memberi skor 4 kepada semua orang — nilai secara kritis.
 
 KRITERIA PENILAIAN (skala 1-5):
 
 1. Perkenalan Diri
-   1=Tidak jelas/tidak lengkap | 2=Ada tapi kurang | 3=Cukup | 4=Baik dan jelas | 5=Sangat detail dan percaya diri
+   Nilai kejelasan dan kelengkapan memperkenalkan diri (nama, latar belakang, kesibukan saat ini).
+   1 = Tidak jelas, informasi tidak lengkap.
+   2 = Ada perkenalan tetapi sangat minim dan tidak runtut.
+   3 = Perkenalan cukup jelas, namun kurang informatif atau kurang mengalir.
+   4 = Perkenalan jelas, runtut, dan informatif.
+   5 = Perkenalan sangat jelas, lengkap, percaya diri, dan menarik.
 
 2. Motivasi mengikuti Program
-   1=Tidak jelas/sangat umum | 2=Ada tapi lemah | 3=Cukup | 4=Jelas dan spesifik | 5=Sangat kuat dan meyakinkan
+   Nilai kedalaman dan relevansi motivasi memilih DCB Maxy Academy.
+   1 = Motivasi tidak jelas atau sangat umum.
+   2 = Ada motivasi, tetapi kurang relevan atau tidak meyakinkan.
+   3 = Cukup jelas dan relevan, namun kurang mendalam.
+   4 = Motivasi kuat, relevan, dan disampaikan cukup meyakinkan.
+   5 = Sangat kuat, spesifik, relevan, dan sangat meyakinkan.
 
 3. Tantangan Karier & Cara Mengatasinya
-   1=Tidak disebutkan | 2=Dangkal | 3=Cukup | 4=Konkret dan reflektif | 5=Sangat insightful
+   Nilai kemampuan menceritakan tantangan nyata dan solusi konkret yang diambil.
+   1 = Tantangan tidak disebutkan atau tidak relevan; solusi tidak ada.
+   2 = Menyebutkan tantangan, tetapi solusi tidak jelas atau dangkal.
+   3 = Menjelaskan tantangan dan solusi secara umum.
+   4 = Menyampaikan contoh nyata dan solusi cukup jelas.
+   5 = Menjelaskan tantangan secara konkret, solusi jelas, dan menunjukkan inisiatif nyata.
 
-4. Tujuan Karier 3-5 Tahun
-   1=Tidak ada tujuan | 2=Sangat umum | 3=Cukup jelas | 4=Spesifik dan realistis | 5=Sangat detail dan terencana
+4. Tujuan Karier sampai 3-5 Tahun
+   Nilai kejelasan dan realisme target karier jangka menengah.
+   1 = Tidak menyampaikan tujuan karier.
+   2 = Menyampaikan tujuan, tetapi sangat umum.
+   3 = Tujuan cukup jelas namun kurang konkret.
+   4 = Tujuan jelas dan realistis.
+   5 = Tujuan sangat jelas, realistis, dan terencana.
 
 5. Relevansi Program dengan Target Karier
-   1=Tidak ada koneksi | 2=Lemah | 3=Cukup | 4=Jelas dan logis | 5=Sangat kuat dan meyakinkan
+   Nilai seberapa jelas kandidat menghubungkan program DCB dengan tujuan kariernya.
+   1 = Tidak menjelaskan hubungan program dengan target karier.
+   2 = Ada hubungan, tetapi sangat umum.
+   3 = Menyebutkan hubungan yang cukup relevan.
+   4 = Menjelaskan manfaat program secara jelas dan realistis.
+   5 = Sangat jelas, spesifik, dan menunjukkan pemahaman mendalam tentang manfaat program.
 
 6. Komitmen & Manajemen Waktu
-   1=Tidak berkomitmen | 2=Ragu-ragu | 3=Cukup | 4=Berkomitmen dengan rencana | 5=Sangat berkomitmen dan detail
+   Nilai kesungguhan dan rencana nyata untuk mengikuti program secara penuh.
+   1 = Tidak menunjukkan komitmen atau rencana waktu.
+   2 = Menyatakan komitmen, tetapi tidak menjelaskan cara mengatur waktu.
+   3 = Komitmen cukup jelas, manajemen waktu masih umum.
+   4 = Komitmen kuat, rencana waktu jelas dan realistis.
+   5 = Komitmen sangat kuat, rencana waktu matang dan meyakinkan.
 
 7. Komunikasi & Kejelasan Penyampaian
-   1=Sangat sulit dipahami | 2=Kurang jelas | 3=Cukup | 4=Jelas dan percaya diri | 5=Sangat komunikatif dan meyakinkan
+   Nilai kualitas berbicara: kelancaran, kepercayaan diri, intonasi, dan kemampuan dipahami.
+   1 = Penyampaian tidak jelas, sulit dipahami.
+   2 = Cukup jelas tetapi tidak percaya diri atau banyak jeda panjang.
+   3 = Cukup lancar dan dapat dipahami.
+   4 = Jelas, percaya diri, dan mengalir.
+   5 = Sangat jelas, engaging, percaya diri, dan komunikatif.
 
 Berikan output dalam format JSON berikut SAJA (tanpa teks lain di luar JSON):
 {
