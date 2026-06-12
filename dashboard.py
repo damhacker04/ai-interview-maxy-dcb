@@ -509,7 +509,7 @@ def main():
                         "Kriteria": ["Perkenalan Diri", "Motivasi", "Tantangan Karier",
                                      "Tujuan Karier", "Relevansi Program", "Komitmen", "Komunikasi"],
                         "Skor": [
-                            round(float(row[k]), 2) if k in row and row[k] not in ("–", "", None) else "–"
+                            f"{float(row[k]):.2f}" if k in row and row[k] not in ("–", "", None) else "–"
                             for k in KOLOM_SKOR
                         ],
                     })
